@@ -9,6 +9,8 @@ class AddTaskScreen extends StatefulWidget {
 
 class _AddTaskScreenState extends State<AddTaskScreen> {
   final TextEditingController taskController =TextEditingController();
+  final TextEditingController pointsController =
+    TextEditingController();
   String selectedCategory = "Learning";
   @override
   Widget build(BuildContext context) {
@@ -58,7 +60,13 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 DropdownMenuItem(
                   value: 'Social',
                   child: Text('Social'),
+                  
                 ),
+                DropdownMenuItem(
+                  value: 'Personal',
+                  child: Text('Personal'),),
+
+                  
               ],
               onChanged: (value) {
                 setState(() {
@@ -66,6 +74,16 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 });
               },
             ),
+            const SizedBox(height: 20),
+
+TextField(
+  controller: pointsController,
+  keyboardType: TextInputType.number,
+  decoration: const InputDecoration(
+    labelText: 'Points',
+    border: OutlineInputBorder(),
+  ),
+),
 
               const SizedBox(height: 20),
 
@@ -77,7 +95,10 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   Task newTask = Task(
     title: taskController.text,
     category: selectedCategory,
+     points: int.parse(pointsController.text),
+     completed: false,
   );
+  
 
  Navigator.pop(context, newTask);
 },

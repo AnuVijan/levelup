@@ -11,8 +11,14 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
       List<Task> tasks = [];
+    
   @override
   Widget build(BuildContext context) {
+      List<Task> pendingTasks =
+    tasks.where((task) => !task.completed).toList();
+
+List<Task> completedTasks =
+    tasks.where((task) => task.completed).toList();
     return Scaffold(
 
         appBar: AppBar(title: Text("LevelUp"),),
@@ -45,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                      ),
 
-                     SizedBox(height: 20,),
+                     SizedBox(height: 20),
 
                      Card(
                         child: Padding(
@@ -64,26 +70,75 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),),
                 SizedBox(height: 20,),
 
-                Expanded(
-                    child: tasks.isEmpty ? const Card(
-                        child: ListTile(
-                            leading: Icon(Icons.task_alt),
-                            title: Text("No Tasks Yet"),
-                            
-                        ),
-                    )
-                    :ListView.builder(
-                        itemCount: tasks.length,
-                        itemBuilder: (context, index){
-                            return Card(
-                                child: ListTile(
-                                    leading: Icon(Icons.task_alt),
-                                    title: Text(tasks[index].title),
-                                    subtitle: Text(tasks[index].category),
-                                ),
-                            );
-                        })
-                    )
+               Expanded(
+  child: ListView(
+    children: [
+      const Text(
+        "Pending Tasks",
+        style: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+
+      ...pendingTasks.map((task) {
+        return Card(
+          child: ListTile(
+            leading: Checkbox(
+              value: task.completed,
+              onChanged: (value) {
+                setState(() {
+                  task.completed = value!;
+                });
+              },
+            ),
+            title: Text(task.title),
+            subtitle: Text(
+              '${task.category} • ${task.points} Points',
+            ),
+            trailing: IconButton(
+  icon: const Icon(Icons.delete),
+  onPressed: () {
+    setState(() {
+      tasks.remove(task);
+    });
+  },
+),
+          ),
+        );
+      }),
+
+      const SizedBox(height: 20),
+
+      const Text(
+        "Completed Tasks",
+        style: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+
+      ...completedTasks.map((task) {
+        return Card(
+          child: ListTile(
+            leading: Checkbox(
+              value: task.completed,
+              onChanged: (value) {
+                setState(() {
+                  task.completed = value!;
+                });
+              },
+            ),
+            title: Text(task.title),
+            subtitle: Text(
+              '${task.category} • ${task.points} Points',
+            ),
+          ),
+        );
+      }),
+    ],
+  ),
+)
 
                 ],
             ),
@@ -100,11 +155,11 @@ class _HomeScreenState extends State<HomeScreen> {
   );
 
   if (newTask != null) {
-     print("Task received: ${newTask.title}");
+    // print("Task received: ${newTask.title}");
     setState(() {
       tasks.add(newTask);
     });
-     print("Total tasks: ${tasks.length}");
+     //print("Total tasks: ${tasks.length}");
   }
 },
 child: Icon(Icons.add),
