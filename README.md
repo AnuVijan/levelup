@@ -1,17 +1,64 @@
-# levelup
+# 🌱 LevelUp – Habit & Growth Tracker App (Flutter)
 
-A new Flutter project.
+LevelUp is a Flutter-based self-improvement app that helps users track daily habits, tasks, and personal growth using a gamified system.
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## 🚀 Features
 
-A few resources to get you started if this is your first Flutter project:
+- ✅ Add / Edit / Delete Tasks
+- 📌 Categorize tasks (Health, Learning, Career, etc.)
+- 💾 Local storage using SharedPreferences
+- 📊 Growth Score system (based on completed tasks)
+- 🔥 Basic Streak tracking
+- 📂 Pending & Completed task separation
+- 🎨 Clean green-themed UI
+- ☰ Navigation Drawer (Profile, Add Task, Categories)
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+---
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 🧠 Tech Stack
+
+- Flutter
+- Dart
+- SharedPreferences (Local Storage)
+- Material Design
+
+---
+
+## 📱 Screens
+
+- Home Screen (Dashboard)
+- Add/Edit Task Screen
+- Drawer Menu Navigation
+
+---
+
+## 📦 State Management
+
+Basic `setState()` is used for state handling.
+
+---
+
+## 🎯 Future Improvements
+
+- 🔥 Real streak system (date-based)
+- 📅 Calendar tracking
+- 🏆 Achievements / badges
+- 👤 Profile system
+- ☁️ Cloud sync
+
+---
+
+## 👩‍💻 Author
+
+**Developed by:** [Anu Vijan]  
+Built as a Flutter learning project focused on app architecture, state management, and local persistence.
+
+This project is part of a personal journey to build real-world Flutter apps and improve development skills step by step.
+
+---
+
+## ⭐ Goal
+
+To evolve into a full-fledged productivity + habit tracking app.
