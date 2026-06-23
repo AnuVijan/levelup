@@ -15,8 +15,11 @@ class MyApp extends StatelessWidget {
        debugShowCheckedModeBanner: false,
        title: "LevelUp",
        theme: ThemeData(
-        useMaterial3: true,
-        colorSchemeSeed: Colors.green,
+        primarySwatch: Colors.green,
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Color(0xFF2E7D32),
+      foregroundColor: Colors.white,
+    ),
        ),
       home: HomeScreen(),
     );

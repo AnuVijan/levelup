@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:levelup/models/task.dart';
 class AddTaskScreen extends StatefulWidget {
-  const AddTaskScreen({super.key});
+  final Task? task;
+  const AddTaskScreen({super.key, this.task,});
 
   @override
   State<AddTaskScreen> createState() => _AddTaskScreenState();
@@ -12,10 +13,19 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   final TextEditingController pointsController =
     TextEditingController();
   String selectedCategory = "Learning";
+  void initState() {
+  super.initState();
+
+  if (widget.task != null) {
+    taskController.text = widget.task!.title;
+    pointsController.text = widget.task!.points.toString();
+    selectedCategory = widget.task!.category;
+  }
+}
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
-      appBar: AppBar(title: Text('Add Task'),),
+      appBar: AppBar(title: Text(widget.task == null ? 'Add Task' : 'Edit Task',),),
       body: Padding(padding: EdgeInsets.all(20),
             child: Column(
               children: [

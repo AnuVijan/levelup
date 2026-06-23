@@ -11,176 +11,306 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-      List<Task> tasks = [];
-    final TaskService taskService = TaskService();
+  List<Task> tasks = [];
+  final TaskService taskService = TaskService();
+
   @override
   void initState() {
-  super.initState();
-  loadTasks();
-}
-Future<void> loadTasks() async {
-  final loadedTasks = await taskService.loadTasks();
+    super.initState();
+    loadTasks();
+  }
 
-  setState(() {
-    tasks = loadedTasks;
-  });
-}
+  Future<void> loadTasks() async {
+    final loadedTasks = await taskService.loadTasks();
+
+    setState(() {
+      tasks = loadedTasks;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-      List<Task> pendingTasks =
-    tasks.where((task) => !task.completed).toList();
+    List<Task> pendingTasks =
+        tasks.where((task) => !task.completed).toList();
 
-List<Task> completedTasks =
-    tasks.where((task) => task.completed).toList();
+    List<Task> completedTasks =
+        tasks.where((task) => task.completed).toList();
+
+    int growthScore = completedTasks.fold(
+      0,
+      (sum, task) => sum + task.points,
+    );
+
+    int streak = completedTasks.isNotEmpty ? 1 : 0;
+
     return Scaffold(
 
-        appBar: AppBar(title: Text("LevelUp"),),
+      // 🌱 APP BAR
+      appBar: AppBar(
+        title: const Text("LevelUp"),
+        backgroundColor: const Color(0xFF2E7D32),
+      ),
 
-        body: Padding(
-            padding: EdgeInsets.all(16),
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                    Text("Good Morning!!", 
-                    style: TextStyle(
-                        fontSize: 28, 
-                        fontWeight: FontWeight.bold
-                    ),),
+      // ☰ DRAWER MENU
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
 
-                    SizedBox(height: 20,),
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Color(0xFF2E7D32),
+              ),
+              child: Text(
+                "LevelUp Menu",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
 
-                    Card(
-                    child: Padding(
-                        padding: EdgeInsets.all(20),
-                    child: Column(
-                        children: [
-                            Text("Today's Growth Score",
-                             style: TextStyle(fontSize: 18),),
-                            SizedBox(height: 10,),
-                            Text('0',
-                            style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),)
-                        ],
+            ListTile(
+              leading: const Icon(Icons.person),
+              title: const Text("Profile"),
+              onTap: () {},
+            ),
+
+            ListTile(
+              leading: const Icon(Icons.add_task),
+              title: const Text("Add Task"),
+              onTap: () async {
+                Navigator.pop(context);
+
+                final Task? newTask = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AddTaskScreen(),
+                  ),
+                );
+
+                if (newTask != null) {
+                  setState(() {
+                    tasks.add(newTask);
+                  });
+                  await taskService.saveTasks(tasks);
+                }
+              },
+            ),
+
+            ListTile(
+              leading: const Icon(Icons.category),
+              title: const Text("Categories"),
+              onTap: () {},
+            ),
+          ],
+        ),
+      ),
+
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+
+            const Text(
+              "Good Morning!!",
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // 🌟 Growth Score Card
+            Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    const Text(
+                      "Today's Growth Score",
+                      style: TextStyle(fontSize: 18),
                     ),
+                    const SizedBox(height: 10),
+                    Text(
+                      '$growthScore',
+                      style: const TextStyle(
+                        fontSize: 36,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // 🔥 Streak Card
+            Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      "Current Streak",
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    Text(
+                      "$streak Day${streak == 1 ? '' : 's'}",
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // 📌 TASK LIST
+            Expanded(
+              child: ListView(
+                children: [
+
+                  const Text(
+                    "Pending Tasks",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  ...pendingTasks.map((task) {
+                    return Card(
+                      child: ListTile(
+                        leading: Checkbox(
+                          value: task.completed,
+                          onChanged: (value) async {
+                            setState(() {
+                              task.completed = value!;
+                            });
+                            await taskService.saveTasks(tasks);
+                          },
                         ),
-                     ),
+                        title: Text(task.title),
+                        subtitle: Text(
+                          '${task.category} • ${task.points} Points',
+                        ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
 
-                     SizedBox(height: 20),
+                            IconButton(
+                              icon: const Icon(Icons.edit),
+                              onPressed: () async {
+                                final Task? editedTask =
+                                    await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        AddTaskScreen(task: task),
+                                  ),
+                                );
 
-                     Card(
-                        child: Padding(
-                            padding: EdgeInsets.all(20),
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                                Text("Current Streak", style: TextStyle(
-                                    fontSize: 18,
-                                ),),
-                                Text("0 Days", style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                ),)
-                            ],
-                        ),   
-                            ),),
-                SizedBox(height: 20,),
+                                if (editedTask != null) {
+                                  setState(() {
+                                    int index =
+                                        tasks.indexOf(task);
+                                    tasks[index] = editedTask;
+                                  });
 
-               Expanded(
-  child: ListView(
-    children: [
-      const Text(
-        "Pending Tasks",
-        style: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
+                                  await taskService.saveTasks(tasks);
+                                }
+                              },
+                            ),
 
-      ...pendingTasks.map((task) {
-        return Card(
-          child: ListTile(
-            leading: Checkbox(
-              value: task.completed,
-              onChanged: (value) async {
-                setState(() {
-                  task.completed = value!;
-                });
-                await taskService.saveTasks(tasks);
-              },
-            ),
-            title: Text(task.title),
-            subtitle: Text(
-              '${task.category} • ${task.points} Points',
-            ),
-            trailing: IconButton(
-  icon: const Icon(Icons.delete),
-  onPressed: () {
-    setState(() {
-      tasks.remove(task);
-    });
-  },
-),
-          ),
-        );
-      }),
+                            IconButton(
+                              icon: const Icon(Icons.delete),
+                              onPressed: () async {
+                                setState(() {
+                                  tasks.remove(task);
+                                });
 
-      const SizedBox(height: 20),
+                                await taskService.saveTasks(tasks);
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }),
 
-      const Text(
-        "Completed Tasks",
-        style: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
+                  const SizedBox(height: 20),
 
-      ...completedTasks.map((task) {
-        return Card(
-          child: ListTile(
-            leading: Checkbox(
-              value: task.completed,
-              onChanged: (value) {
-                setState(() {
-                  task.completed = value!;
-                });
-              },
-            ),
-            title: Text(task.title),
-            subtitle: Text(
-              '${task.category} • ${task.points} Points',
-            ),
-          ),
-        );
-      }),
-    ],
-  ),
-)
+                  const Text(
+                    "Completed Tasks",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
 
+                  ...completedTasks.map((task) {
+                    return Card(
+                      child: ListTile(
+                        leading: Checkbox(
+                          value: task.completed,
+                          onChanged: (value) async {
+                            setState(() {
+                              task.completed = value!;
+                            });
+                            await taskService.saveTasks(tasks);
+                          },
+                        ),
+                        title: Text(task.title),
+                        subtitle: Text(
+                          '${task.category} • ${task.points} Points',
+                        ),
+                      ),
+                    );
+                  }),
                 ],
+              ),
             ),
-            ),
+          ],
+        ),
+      ),
 
-          
-        floatingActionButton: FloatingActionButton(
+      // ➕ FLOATING BUTTON
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xFF2E7D32),
         onPressed: () async {
-  final Task? newTask = await Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => const AddTaskScreen(),
-    ),
-  );
+          final Task? newTask = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AddTaskScreen(),
+            ),
+          );
 
-  if (newTask != null) {
-    // print("Task received: ${newTask.title}");
-    setState(() {
-      tasks.add(newTask);
-    });
-     //print("Total tasks: ${tasks.length}");
-      await taskService.saveTasks(tasks);
-  }
-},
-child: Icon(Icons.add),
-        
+          if (newTask != null) {
+            setState(() {
+              tasks.add(newTask);
+            });
 
-      ), 
-       );
-    
+            await taskService.saveTasks(tasks);
+          }
+        },
+        child: const Icon(Icons.add),
+      ),
+    );
   }
 }
