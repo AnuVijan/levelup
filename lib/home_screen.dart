@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'add_task_screen.dart';
 import 'package:levelup/models/task.dart';
+import 'package:levelup/services/task_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -11,8 +12,19 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
       List<Task> tasks = [];
-    
+    final TaskService taskService = TaskService();
   @override
+  void initState() {
+  super.initState();
+  loadTasks();
+}
+Future<void> loadTasks() async {
+  final loadedTasks = await taskService.loadTasks();
+
+  setState(() {
+    tasks = loadedTasks;
+  });
+}
   Widget build(BuildContext context) {
       List<Task> pendingTasks =
     tasks.where((task) => !task.completed).toList();
@@ -86,10 +98,11 @@ List<Task> completedTasks =
           child: ListTile(
             leading: Checkbox(
               value: task.completed,
-              onChanged: (value) {
+              onChanged: (value) async {
                 setState(() {
                   task.completed = value!;
                 });
+                await taskService.saveTasks(tasks);
               },
             ),
             title: Text(task.title),
@@ -160,6 +173,7 @@ List<Task> completedTasks =
       tasks.add(newTask);
     });
      //print("Total tasks: ${tasks.length}");
+      await taskService.saveTasks(tasks);
   }
 },
 child: Icon(Icons.add),

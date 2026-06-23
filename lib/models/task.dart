@@ -10,4 +10,20 @@ class Task {
     required this.points,
     required this.completed,
   });
+  Map<String, dynamic> toMap() {
+    return {
+      'title': title,
+      'category': category,
+      'points': points,
+      'completed': completed,
+    };
+  }
+  factory Task.fromMap(Map<String, dynamic> map) {
+  return Task(
+    title: map['title'],
+    category: map['category'],
+    points: map['points'],
+    completed: map['completed'],
+  );
+}
 }
