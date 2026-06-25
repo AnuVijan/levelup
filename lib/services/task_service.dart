@@ -27,4 +27,23 @@ class TaskService {
       );
     }).toList();
   }
+  Future<void> saveStreak(int streak) async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setInt('streak', streak);
+}
+
+Future<int> loadStreak() async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getInt('streak') ?? 0;
+}
+
+Future<void> saveLastCompletedDate(String date) async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString('lastCompletedDate', date);
+}
+
+Future<String?> loadLastCompletedDate() async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getString('lastCompletedDate');
+}
 }

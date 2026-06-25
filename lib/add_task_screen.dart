@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:levelup/models/task.dart';
+import 'package:levelup/models/category.dart';
+import 'package:levelup/services/category_service.dart';
+
 class AddTaskScreen extends StatefulWidget {
   final Task? task;
   const AddTaskScreen({super.key, this.task,});
@@ -9,19 +12,44 @@ class AddTaskScreen extends StatefulWidget {
 }
 
 class _AddTaskScreenState extends State<AddTaskScreen> {
-  final TextEditingController taskController =TextEditingController();
-  final TextEditingController pointsController =
-    TextEditingController();
-  String selectedCategory = "Learning";
-  void initState() {
-  super.initState();
+  final TextEditingController taskController =
+      TextEditingController();
 
-  if (widget.task != null) {
-    taskController.text = widget.task!.title;
-    pointsController.text = widget.task!.points.toString();
-    selectedCategory = widget.task!.category;
+  final TextEditingController pointsController =
+      TextEditingController();
+
+  String selectedCategory = "Learning";
+
+  List<Category> categories = [];
+
+  final CategoryService categoryService =
+      CategoryService();
+
+  Future<void> loadCategories() async {
+    final loadedCategories =
+        await categoryService.loadCategories();
+
+    setState(() {
+      categories = loadedCategories;
+    });
   }
-}
+
+  @override
+  void initState() {
+    super.initState();
+
+    loadCategories();
+
+    if (widget.task != null) {
+      taskController.text = widget.task!.title;
+
+      pointsController.text =
+          widget.task!.points.toString();
+
+      selectedCategory =
+          widget.task!.category;
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
@@ -46,38 +74,12 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 labelText: 'Category',
                 border: OutlineInputBorder(),
               ),
-              items: const [
-                DropdownMenuItem(
-                  value: 'Health',
-                  child: Text('Health'),
-                ),
-                DropdownMenuItem(
-                  value: 'Learning',
-                  child: Text('Learning'),
-                ),
-                DropdownMenuItem(
-                  value: 'Career',
-                  child: Text('Career'),
-                ),
-                DropdownMenuItem(
-                  value: 'Discipline',
-                  child: Text('Discipline'),
-                ),
-                DropdownMenuItem(
-                  value: 'Mindset',
-                  child: Text('Mindset'),
-                ),
-                DropdownMenuItem(
-                  value: 'Social',
-                  child: Text('Social'),
-                  
-                ),
-                DropdownMenuItem(
-                  value: 'Personal',
-                  child: Text('Personal'),),
-
-                  
-              ],
+              items: categories.map((category) {
+  return DropdownMenuItem<String>(
+    value: category.name,
+    child: Text(category.name),
+  );
+}).toList(),
               onChanged: (value) {
                 setState(() {
                   selectedCategory = value!;
